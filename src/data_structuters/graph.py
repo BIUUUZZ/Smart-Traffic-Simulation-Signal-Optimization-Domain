@@ -354,3 +354,26 @@ def run_experiments() -> None:
     print("  DFS       → O(V + E)")
     print("="*60)
 
+
+# ─────────────────────────────────────────────
+# Demo standalone
+# ─────────────────────────────────────────────
+if __name__ == "__main__":
+    print("=" * 60)
+    print("MODUL 1: GRAPH JARINGAN JALAN")
+    print("Topik 7 – Smart Traffic Simulation")
+    print("=" * 60)
+
+    g = build_traffic_graph(seed=17)
+    print(f"\nGraf berhasil dibangun: {g}")
+    print(f"Persimpangan: {g.nodes[:5]} ... (total {g.node_count})")
+    print(f"Konektivitas: {'TERHUBUNG' if g.is_connected() else 'TIDAK TERHUBUNG'}")
+
+    print("\nTetangga A1:", g.neighbors("A1"))
+    print("Degree A3  :", g.degree("A3"))
+    print("Ada jalan A1→A2:", g.has_road("A1", "A2"))
+    print("Bobot A1→A2:", g.get_weight("A1", "A2"), "meter")
+
+    print("\nDFS dari A1:", g.dfs("A1"))
+
+    run_experiments()
