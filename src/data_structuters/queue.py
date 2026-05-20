@@ -307,3 +307,38 @@ def run_experiments() -> None:
     print("="*60)
 
 
+# ─────────────────────────────────────────────
+# Demo standalone
+# ─────────────────────────────────────────────
+if __name__ == "__main__":
+    print("=" * 60)
+    print("MODUL 2: PRIORITY QUEUE KENDARAAN")
+    print("Topik 7 – Smart Traffic Simulation")
+    print("=" * 60)
+
+    q = IntersectionQueue("A1")
+
+    # Tambah kendaraan beragam tipe
+    sample_vehicles = [
+        Vehicle("MOTOR",    "A1", "B2", arrival_time=1.0),
+        Vehicle("MOBIL",    "A1", "C3", arrival_time=2.0),
+        Vehicle("BUS",      "A1", "D4", arrival_time=3.0),
+        Vehicle("AMBULANS", "A1", "E5", arrival_time=4.0),
+        Vehicle("MOTOR",    "A1", "A5", arrival_time=5.0),
+        Vehicle("AMBULANS", "A1", "B1", arrival_time=6.0),   # AMBULANS ke-2 (FIFO)
+    ]
+
+    print("\n[MASUK] Antrian kendaraan:")
+    for v in sample_vehicles:
+        q.enqueue(v)
+        print(f"  + {v}")
+
+    print(f"\nUkuran antrian: {q.size()}")
+    print(f"Kendaraan berikutnya (peek): {q.peek()}")
+
+    print("\n[BERANGKAT] Urutan keberangkatan:")
+    while not q.is_empty():
+        v = q.dequeue()
+        print(f"  → {v}")
+
+    run_experiments()
