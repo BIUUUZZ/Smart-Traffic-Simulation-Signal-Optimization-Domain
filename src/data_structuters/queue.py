@@ -265,3 +265,45 @@ class TrafficQueueManager:
         return f"TrafficQueueManager(intersections={len(self._queues)}, total_vehicles={total})"
 
 
+# ─────────────────────────────────────────────
+# Eksperimen Runtime
+# ─────────────────────────────────────────────
+def run_experiments() -> None:
+    """
+    Eksperimen enqueue/dequeue untuk N = 10, 25, 100 kendaraan.
+    """
+    print("\n" + "="*60)
+    print("EKSPERIMEN RUNTIME - MODUL 2: PRIORITY QUEUE")
+    print("="*60)
+    print(f"{'N kendaraan':<14} {'enqueue (s)':<18} {'dequeue (s)':<15}")
+    print("-"*50)
+
+    for n in [10, 25, 100]:
+        random.seed(17)
+        q = IntersectionQueue("TEST")
+
+        # Enqueue
+        vehicles = []
+        for i in range(n):
+            vtype = random.choice(VEHICLE_TYPES)
+            v = Vehicle(vtype, "A1", "B2", arrival_time=float(i))
+            vehicles.append(v)
+
+        t0 = time.perf_counter()
+        for v in vehicles:
+            q.enqueue(v)
+        t_enq = time.perf_counter() - t0
+
+        # Dequeue
+        t0 = time.perf_counter()
+        while not q.is_empty():
+            q.dequeue()
+        t_deq = time.perf_counter() - t0
+
+        print(f"{n:<14} {t_enq:<18.6f} {t_deq:<15.6f}")
+
+    print("="*60)
+    print("Big-O: enqueue O(log n), dequeue O(log n)")
+    print("="*60)
+
+
