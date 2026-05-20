@@ -135,3 +135,90 @@ class MinHeap:
         return f"MinHeap(size={self.size})"
 
 
+# ─────────────────────────────────────────────
+# Priority Queue Kendaraan per Persimpangan
+# ─────────────────────────────────────────────
+class IntersectionQueue:
+    """
+    Priority Queue kendaraan untuk satu persimpangan.
+
+    Urutan prioritas: AMBULANS > BUS > MOBIL > MOTOR
+    Tie-break          : FIFO berdasarkan arrival_time
+
+    Key komparasi: (priority, arrival_time)
+
+    Big-O:
+        enqueue : O(log n)
+        dequeue : O(log n)
+        peek    : O(1)
+    """
+
+    def __init__(self, intersection_name: str):
+        self.name = intersection_name
+        self._heap = MinHeap(
+            key_fn=lambda v: (v.priority, v.arrival_time)
+        )
+        self._total_in  = 0
+        self._total_out = 0
+
+    def enqueue(self, vehicle: Vehicle) -> None:
+        """
+        Tambah kendaraan ke antrian.
+        Big-O: O(log n)
+        """
+        self._heap.push(vehicle)
+        self._total_in += 1
+
+    def dequeue(self) -> Vehicle:
+        """
+        Ambil kendaraan dengan prioritas tertinggi.
+        Tie-break FIFO (arrival_time terkecil duluan).
+        Big-O: O(log n)
+        """
+        if self._heap.is_empty():
+            raise IndexError(f"Antrian {self.name} kosong")
+        vehicle = self._heap.pop()
+        self._total_out += 1
+        return vehicle
+
+    def peek(self) -> Vehicle:
+        """Lihat kendaraan berikutnya tanpa menghapus. Big-O: O(1)"""
+        return self._heap.peek()
+
+    def size(self) -> int:
+        return self._heap.size
+
+    def is_empty(self) -> bool:
+        return self._heap.is_empty()
+
+    def get_all_sorted(self) -> list:
+        """
+        Kembalikan semua kendaraan dalam urutan prioritas (non-destructive).
+        Big-O: O(n log n)
+        """
+        temp = MinHeap(key_fn=lambda v: (v.priority, v.arrival_time))
+        temp._data = list(self._heap._data)
+        result = []
+        import copy
+        snapshot = MinHeap(key_fn=lambda v: (v.priority, v.arrival_time))
+        snapshot._data = list(self._heap._data)
+        # rebuild heap property
+        n = len(snapshot._data)
+        for i in range(n // 2 - 1, -1, -1):
+            snapshot._sift_down(i)
+        while not snapshot.is_empty():
+            result.append(snapshot.pop())
+        return result
+
+    def stats(self) -> dict:
+        return {
+            "intersection" : self.name,
+            "current_size" : self.size(),
+            "total_in"     : self._total_in,
+            "total_out"    : self._total_out,
+        }
+
+    def __repr__(self) -> str:
+        return f"IntersectionQueue({self.name}, size={self.size()})"
+
+
