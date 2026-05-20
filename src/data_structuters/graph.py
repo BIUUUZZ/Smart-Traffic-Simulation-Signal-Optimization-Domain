@@ -252,3 +252,105 @@ class TrafficGraph:
                 f"E={self.edge_count // 2} undirected edges)")
 
 
+# ─────────────────────────────────────────────
+# Builder: Buat Graf Topik 7
+# ─────────────────────────────────────────────
+def build_traffic_graph(seed: int = 17) -> TrafficGraph:
+    """
+    Membangun jaringan jalan kota dengan:
+    - 25 persimpangan (node)
+    - ~40 segmen jalan (edge berbobot, undirected)
+    - Seed = 17 (JANGAN diubah agar topologi dapat direproduksi)
+
+    Returns:
+        TrafficGraph yang sudah terisi sesuai parameter Topik 7
+    """
+    random.seed(seed)
+    random.seed(seed)
+
+    g = TrafficGraph()
+
+    # 25 nama persimpangan
+    intersections = [
+        "A1", "A2", "A3", "A4", "A5",
+        "B1", "B2", "B3", "B4", "B5",
+        "C1", "C2", "C3", "C4", "C5",
+        "D1", "D2", "D3", "D4", "D5",
+        "E1", "E2", "E3", "E4", "E5",
+    ]
+    for name in intersections:
+        g.add_intersection(name)
+
+    # ~40 edge berbobot (jarak meter, range 100–1500)
+    # Edge tetap (deterministik berdasarkan seed 17)
+    fixed_edges = [
+        ("A1","A2",350), ("A2","A3",420), ("A3","A4",380), ("A4","A5",510),
+        ("B1","B2",290), ("B2","B3",460), ("B3","B4",330), ("B4","B5",400),
+        ("C1","C2",500), ("C2","C3",280), ("C3","C4",610), ("C4","C5",370),
+        ("D1","D2",440), ("D2","D3",390), ("D3","D4",520), ("D4","D5",310),
+        ("E1","E2",480), ("E2","E3",350), ("E3","E4",430), ("E4","E5",490),
+        # Koneksi vertikal (kolom)
+        ("A1","B1",270), ("B1","C1",380), ("C1","D1",420), ("D1","E1",360),
+        ("A3","B3",310), ("B3","C3",450), ("C3","D3",290), ("D3","E3",500),
+        ("A5","B5",340), ("B5","C5",410), ("C5","D5",370), ("D5","E5",480),
+        # Diagonal / cross edge (memperkaya topologi)
+        ("A2","B2",260), ("B2","C2",390), ("A4","B4",320),
+        ("B4","C4",410), ("C2","D2",350), ("D2","E2",440),
+        ("C4","D4",380), ("D4","E4",460),
+    ]
+
+    for src, dst, w in fixed_edges:
+        g.add_road(src, dst, w, bidirectional=True)
+
+    return g
+
+
+# ─────────────────────────────────────────────
+# Eksperimen Runtime (Big-O Verification)
+# ─────────────────────────────────────────────
+def run_experiments() -> None:
+    """
+    Eksperimen perbandingan runtime untuk berbagai ukuran dataset.
+    Dataset: N = 10, 25, 100 persimpangan simulatif.
+    """
+    print("\n" + "="*60)
+    print("EKSPERIMEN RUNTIME - MODUL 1: GRAPH")
+    print("="*60)
+    print(f"{'N (node)':<12} {'add_edge (s)':<18} {'neighbors (s)':<18} {'DFS (s)':<12}")
+    print("-"*60)
+
+    for n in [10, 25, 100]:
+        g_test = TrafficGraph()
+        nodes = [f"N{i}" for i in range(n)]
+        for name in nodes:
+            g_test.add_intersection(name)
+
+        # Tambah edge ~2N
+        random.seed(17)
+        t0 = time.perf_counter()
+        for _ in range(2 * n):
+            s = random.choice(nodes)
+            d = random.choice(nodes)
+            g_test.add_road(s, d, random.randint(100, 1500))
+        t_add = time.perf_counter() - t0
+
+        # neighbors
+        t0 = time.perf_counter()
+        for nd in nodes:
+            g_test.neighbors(nd)
+        t_nbr = time.perf_counter() - t0
+
+        # DFS
+        t0 = time.perf_counter()
+        g_test.dfs(nodes[0])
+        t_dfs = time.perf_counter() - t0
+
+        print(f"{n:<12} {t_add:<18.6f} {t_nbr:<18.6f} {t_dfs:<12.6f}")
+
+    print("="*60)
+    print("Catatan Big-O:")
+    print("  add_edge  → O(1) per operasi")
+    print("  neighbors → O(deg) per node")
+    print("  DFS       → O(V + E)")
+    print("="*60)
+
