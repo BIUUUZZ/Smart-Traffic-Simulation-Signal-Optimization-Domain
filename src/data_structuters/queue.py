@@ -222,3 +222,46 @@ class IntersectionQueue:
         return f"IntersectionQueue({self.name}, size={self.size()})"
 
 
+# ─────────────────────────────────────────────
+# Manajer antrian semua persimpangan
+# ─────────────────────────────────────────────
+class TrafficQueueManager:
+    """
+    Manajer Priority Queue untuk seluruh jaringan persimpangan.
+    Setiap persimpangan punya IntersectionQueue sendiri.
+    """
+
+    def __init__(self, intersection_names: list):
+        self._queues: dict[str, IntersectionQueue] = {
+            name: IntersectionQueue(name)
+            for name in intersection_names
+        }
+
+    def masuk(self, intersection: str, vehicle: Vehicle) -> None:
+        """Tambah kendaraan ke antrian persimpangan."""
+        if intersection not in self._queues:
+            raise KeyError(f"Persimpangan '{intersection}' tidak ditemukan")
+        vehicle.arrival_time = time.time()
+        self._queues[intersection].enqueue(vehicle)
+
+    def berangkat(self, intersection: str) -> Vehicle:
+        """Keluarkan kendaraan dengan prioritas tertinggi."""
+        if intersection not in self._queues:
+            raise KeyError(f"Persimpangan '{intersection}' tidak ditemukan")
+        return self._queues[intersection].dequeue()
+
+    def antrian(self, intersection: str) -> IntersectionQueue:
+        """Akses langsung ke antrian suatu persimpangan."""
+        return self._queues[intersection]
+
+    def status_all(self) -> list:
+        """Status semua antrian, diurutkan dari tersibuk."""
+        stats = [q.stats() for q in self._queues.values()]
+        stats.sort(key=lambda s: s["current_size"], reverse=True)
+        return stats
+
+    def __repr__(self) -> str:
+        total = sum(q.size() for q in self._queues.values())
+        return f"TrafficQueueManager(intersections={len(self._queues)}, total_vehicles={total})"
+
+
