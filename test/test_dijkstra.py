@@ -179,3 +179,51 @@ def test_route_recommendation_hindari_macet():
     assert dist == INF or "B" not in path
 
 
+# ══════════════════════════════════════════════
+# TEST GRAPH BESAR
+# ══════════════════════════════════════════════
+
+def test_build_traffic_graph():
+    g = build_traffic_graph(17)
+
+    solver = DijkstraSolver(g)
+
+    dist, path = solver.shortest_path("A1", "E5")
+
+    assert dist < INF
+    assert path[0] == "A1"
+    assert path[-1] == "E5"
+
+
+def test_50_query_dijkstra():
+    g = build_traffic_graph(17)
+
+    solver = DijkstraSolver(g)
+
+    random.seed(17)
+
+    ok = 0
+
+    for _ in range(50):
+
+        src = random.choice(g.nodes)
+
+        result = solver.solve(src)
+
+        if result.distance_to(src) == 0:
+            ok += 1
+
+    assert ok == 50
+
+
+def test_graph_satu_node():
+    g = TrafficGraph()
+
+    g.add_intersection("SOLO")
+
+    solver = DijkstraSolver(g)
+
+    dist, path = solver.shortest_path("SOLO", "SOLO")
+
+    assert dist == 0
+    assert path == ["SOLO"]
