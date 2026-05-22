@@ -142,4 +142,62 @@ class IntersectionBST:
 
         return node, deleted
 
-   
+    # ─────────────────────────────
+    # MIN & MAX
+    # ─────────────────────────────
+    def _find_min(self, node):
+
+        while node.left is not None:
+            node = node.left
+
+        return node
+
+    def _find_max(self, node):
+
+        while node.right is not None:
+            node = node.right
+
+        return node
+
+    # ─────────────────────────────
+    # TRAVERSAL
+    # ─────────────────────────────
+    def inorder(self):
+
+        result = []
+
+        self._inorder_recursive(self._root, result)
+
+        return result
+
+    def _inorder_recursive(self, node, result):
+
+        if node is None:
+            return
+
+        self._inorder_recursive(node.left, result)
+
+        result.append((node.key, node.data))
+
+        self._inorder_recursive(node.right, result)
+
+    def preorder(self):
+
+        result = []
+
+        self._preorder_recursive(self._root, result)
+
+        return result
+
+    def _preorder_recursive(self, node, result):
+
+        if node is None:
+            return
+
+        result.append(node.key)
+
+        self._preorder_recursive(node.left, result)
+
+        self._preorder_recursive(node.right, result)
+
+    
