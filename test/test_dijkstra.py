@@ -95,3 +95,41 @@ def test_all_distances():
     assert all_d["C"] == 2
 
 
+# ══════════════════════════════════════════════
+# TEST SHORTEST PATH
+# ══════════════════════════════════════════════
+
+def test_shortest_path():
+    g = make_simple_graph()
+
+    solver = DijkstraSolver(g)
+
+    dist, path = solver.shortest_path("A", "D")
+
+    assert dist == 7
+    assert path == ["A", "B", "D"]
+
+
+def test_source_target_sama():
+    g = make_simple_graph()
+
+    solver = DijkstraSolver(g)
+
+    dist, path = solver.shortest_path("B", "B")
+
+    assert dist == 0
+    assert path == ["B"]
+
+
+def test_source_tidak_ada():
+    g = make_simple_graph()
+
+    solver = DijkstraSolver(g)
+
+    try:
+        solver.shortest_path("SALAH", "D")
+        assert False
+    except ValueError:
+        assert True
+
+
