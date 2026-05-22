@@ -63,4 +63,83 @@ class IntersectionBST:
             node.data.update(data or {})
             return False
 
+    # ─────────────────────────────
+    # SEARCH
+    # ─────────────────────────────
+    def search(self, key: str):
+
+        return self._search_recursive(self._root, key)
+
+    def _search_recursive(self, node, key):
+
+        if node is None:
+            return None
+
+        if key == node.key:
+            return node
+
+        elif key < node.key:
+            return self._search_recursive(node.left, key)
+
+        else:
+            return self._search_recursive(node.right, key)
+
+    def contains(self, key: str) -> bool:
+        return self.search(key) is not None
+
+    # ─────────────────────────────
+    # DELETE
+    # ─────────────────────────────
+    def delete(self, key: str) -> bool:
+
+        self._root, deleted = self._delete_recursive(self._root, key)
+
+        if deleted:
+            self._size -= 1
+
+        return deleted
+
+    def _delete_recursive(self, node, key):
+
+        if node is None:
+            return node, False
+
+        deleted = False
+
+        if key < node.key:
+
+            node.left, deleted = self._delete_recursive(node.left, key)
+
+        elif key > node.key:
+
+            node.right, deleted = self._delete_recursive(node.right, key)
+
+        else:
+
+            deleted = True
+
+            # tidak punya anak
+            if node.left is None and node.right is None:
+                return None, deleted
+
+            # satu anak
+            if node.left is None:
+                return node.right, deleted
+
+            if node.right is None:
+                return node.left, deleted
+
+            # dua anak
+            successor = self._find_min(node.right)
+
+            node.key = successor.key
+            node.data = successor.data
+
+            node.right, _ = self._delete_recursive(
+                node.right,
+                successor.key
+            )
+
+        return node, deleted
+
    
