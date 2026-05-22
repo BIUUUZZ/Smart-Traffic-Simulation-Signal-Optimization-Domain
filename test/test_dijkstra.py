@@ -133,3 +133,49 @@ def test_source_tidak_ada():
         assert True
 
 
+# ══════════════════════════════════════════════
+# TEST TOP K ROUTES
+# ══════════════════════════════════════════════
+
+def test_top_k_routes():
+    g = make_simple_graph()
+
+    solver = DijkstraSolver(g)
+
+    top3 = solver.top_k_routes("A", k=3)
+
+    assert len(top3) == 3
+
+    assert top3[0][1] <= top3[1][1]
+    assert top3[1][1] <= top3[2][1]
+
+
+# ══════════════════════════════════════════════
+# TEST ROUTE RECOMMENDATION
+# ══════════════════════════════════════════════
+
+def test_route_recommendation_normal():
+    g = make_simple_graph()
+
+    solver = DijkstraSolver(g)
+
+    dist, path = solver.route_recommendation("A", "D")
+
+    assert dist == 7
+    assert path == ["A", "B", "D"]
+
+
+def test_route_recommendation_hindari_macet():
+    g = make_simple_graph()
+
+    solver = DijkstraSolver(g)
+
+    dist, path = solver.route_recommendation(
+        "A",
+        "D",
+        congested=["B"]
+    )
+
+    assert dist == INF or "B" not in path
+
+
